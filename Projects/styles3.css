@@ -1,0 +1,25 @@
+html{
+    background-color:rgba(180, 180, 180, 1);
+}
+#text-div{
+  display:block;
+  text-align:center;
+  padding:2px;
+}
+#img-div{
+ background-color: white; /* White background around the image */
+  padding: 40px; /* Large space around the image */
+  text-align: center; /* Center the image inside the container */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: shadow for effect */
+  margin: 20px 0; /* Space above and below the image container */
+}
+#image{
+  max-width: 100%;
+  height: auto;
+  margin:auto;
+  display:block;
+}
+figcaption{
+  margin-top:10px;
+  color:#555;
+}
