@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width initial-scale=1.0" name="viewport">
+  <style>
+    body {
+      background-color: #1A1A33;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+    }
+
+    .container {
+      background-color: white;
+      display: flex;
+      color: #333;
+      width: 400px;
+      height: 850px;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 20px;
+      box-shadow: 15px 15px gray;
+      margin-bottom: 70px;
+    }
+
+    .heading {
+      margin: 50px;
+    }
+
+    label {
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .form {
+      margin-top: 15px;
+      width: 100%;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+
+    #search-input {
+      width: 50%;
+
+      padding: 7px;
+    }
+
+    #search-button {
+      background-color: #9010C0;
+      height: 100%;
+      color: white;
+      width: 20%;
+      border: none;
+      border-radius: 50px;
+    }
+
+    .answer {
+      width: 96%;
+      height: 340px;
+      margin: 25px;
+
+    }
+
+    h2 {
+      font-weight: normal;
+      display: inline;
+      margin-left: 15px;
+    }
+
+    h3 {
+      display: inline;
+      margin-left: 5px;
+    }
+
+    p {
+      font-size: 14px;
+      margin-left: 10px;
+      display: inline;
+
+    }
+
+    #types {
+      width: 80%;
+      height: 40px;
+      margin: 10px 15px;
+      justify-content: space-evenly;
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+      /* Makes everything stack in a column */
+      gap: 10px;
+      width: 100%;
+      max-width: 350px;
+      /* Adjust as needed */
+      border-radius: 10px;
+    }
+
+    .details>div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(145deg, #6a0dad, #9010C0);
+      /* Gradient */
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .box1 {
+
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .box2 {
+
+      color: #ffd700;
+      /* Gold color for stats */
+      font-size: 18px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .pokemon-image {
+      width: 100%;
+      /* Take full width for better alignment */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px auto;
+      padding: 10px;
+      background: none;
+      /* Remove background gradient */
+    }
+
+    .pokemon-image img {
+      max-width: 100px;
+      /* Set a fixed width */
+      max-height: 100px;
+      /* Set a fixed height */
+      object-fit: contain;
+    }
+  </style>
+  <title>Pokemon Search App</title>
+</head>
+
+<body>
+  <h1 class="heading">Pokémon Search App</h1>
+  <div class="container">
+    <label for="search-input"><strong>Search for Pokémon Name or ID:</strong></label>
+    <div class="form">
+      <div></div>
+      <div></div>
+      <input type="text" id="search-input" required>
+      <button id="search-button">Search</button>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="answer" id="main-div">
+      <h2 id="pokemon-name"></h2> <!-- Name will go here -->
+      <h3 id="pokemon-id"></h3>
+      <br>
+      <p id="height"></p>
+      <p id="weight"></p>
+      <div class="pokemon-image" id="image-div"></div> <!-- Pokémon Image Here -->
+
+      <div id="types"></div>
+    </div>
+
+    <div class="details">
+      <div>
+        <div class="box1"><strong>Base</strong></div>
+        <div class="box3"><strong>Stats</strong></div>
+      </div>
+      <div>
+        <div class="box1">HP:</div>
+        <div class="box2 stat-pokemon" id="hp"></div>
+      </div>
+      <div>
+        <div class="box1 ">Attack:</div>
+        <div class="box2 stat-pokemon" id="attack"></div>
+      </div>
+      <div>
+        <div class="box1">Defense:</div>
+        <div class="box2 stat-pokemon" id="defense"></div>
+      </div>
+      <div>
+        <div class="box1">Sp. Attack:</div>
+        <div class="box2 stat-pokemon" id="special-attack"></div>
+      </div>
+      <div>
+        <div class="box1">Sp. Defense:</div>
+        <div class="box2 stat-pokemon" id="special-defense"></div>
+      </div>
+      <div>
+        <div class="box1">Speed</div>
+        <div class="box2 stat-pokemon" id="speed"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const input = document.getElementById("search-input");
+    const button = document.getElementById("search-button");
+    const urlPoke = "https://pokeapi-proxy.freecodecamp.rocks/api/pokemon";
+    const main_div = document.getElementById("main-div");
+    const img_div = document.getElementById("image-div");
+    const box = document.querySelectorAll(".box2");
+    const typesContainer = document.getElementById("types");
+    const fetchData = async () => {
+      try {
+        const res = await fetch(urlPoke);
+        const data = await res.json();
+        const { results } = data;
+        button.addEventListener("click", () => check_input(results, input));
+      } catch (error) {
+        console.error("Error fetching Pokémon data:", error);
+      }
+    };
+
+
+    const check_input = (results, input) => {
+      if (!input.value.trim()) {
+        alert("Please enter a Pokémon name or ID");
+        return;
+      }
+      clear();
+      const foundPokemon = results.find(({ name, id }) =>
+        name.toLowerCase() === input.value.toLowerCase() ||
+        id.toString() === input.value
+      );
+
+      if (!foundPokemon) {
+        alert("Pokémon not found");
+        return;
+      }
+
+      displayPokemon(foundPokemon);
+    };
+
+
+    const displayPokemon = (pokemon) => {
+      fetch(pokemon.url)
+        .then(res => res.json())
+        .then(data => {
+          displayPokemonDetails(data, pokemon.name);
+        })
+        .catch(error => {
+          console.error("Error fetching Pokémon details:", error);
+          alert("Pokémon not found");
+        });
+    };
+
+    const displayPokemonDetails = (data, name) => {
+      const { height, weight, sprites, id, types, stats } = data;
+
+      // Capitalize the Pokémon Name
+      const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+
+      document.getElementById("pokemon-name").innerHTML = capitalizedName;
+      document.getElementById("pokemon-id").innerHTML = `#${id}`;
+      document.getElementById("height").innerHTML = `Height: ${height}`;
+      document.getElementById("weight").innerHTML = `Weight: ${weight}`;
+
+      createImage(sprites.front_default, name);
+      createTypes(types);
+      fillStats(stats);
+    };
+
+    const createTypes = (types) => {
+      typesContainer.innerHTML = types.map(type => `
+        <span class="type-box">${type.type.name.toUpperCase()}</span>
+    `).join('');
+    };
+
+    const fillStats = (stats) => {
+      box.forEach((element, index) => {
+        element.textContent = stats[index].base_stat;
+      });
+    };
+
+    const createImage = (url, name) => {
+      if (img_div) {
+        img_div.innerHTML = `<img src="${url}" alt="${name}" class="pokemon-img" id="sprite">`;
+      } else {
+        console.error("Error: Image container not found.");
+      }
+    };
+
+    fetchData();
+    const clear = () => {
+      document.getElementById("pokemon-name").innerHTML = "";
+      document.getElementById("pokemon-id").innerHTML = "";
+      document.getElementById("height").innerHTML = "";
+      document.getElementById("weight").innerHTML = "";
+      box.forEach((element, index) => {
+        element.textContent = "";
+      });
+      img_div.innerHTML = "";
+      typesContainer.innerHTML = "";
+    }
+  </script>
+</body>
+
+</html>
